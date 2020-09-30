@@ -21,11 +21,10 @@ class Battle:
                 print("Invalid command")
 
     def battle_menu(self):
-        print("1. Attack\n2. Status\n3. Run")
+        print("1. 攻撃\n2. ステータス\n3. 逃げる")
         self.player_battle_command = self.obtain_battle_command()
 
     def start_battle(self):
-
         player_commands = {
         self.ATTACK: self.player.attack,
         self.DISPLAY_STATS: self.player.display_stats,
@@ -70,15 +69,16 @@ class Battle:
             self.player_defeated()
             return True
 
-        if(self.player.ran == self.player.YES):
+        if(self.player.ran):
             self.player_ran()
-            self.player.ran = self.player.NO
+            self.player.ran = False
             return True
 
         return False
 
     def player_victory(self):
         display_message("%sを倒した!" % (self.enemy.stats["name"]))
+        self.player.gain_exp(self.enemy.obtainable_exp)
 
     def player_defeated(self):
         display_message("力が尽きた。")
