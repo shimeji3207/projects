@@ -21,6 +21,7 @@ class Hero(Character):
         "level": 1,
         "exp": 0,
         "next_exp": 15,
+        "gold": 0,
         "max_hp": 20,
         "hp": 20,
         "attack": 5,
@@ -30,18 +31,14 @@ class Hero(Character):
         self.ran = False
 
     def display_stats(self):
-        display_message("""Name: %s
-Lvl: %s
-EXP: %s
-Next level EXP: %s
-HP: %s/%s
-ATK: %s
-DEF: %s
-SPD: %s""" % (self.stats["name"], self.stats["level"], self.stats["exp"], self.stats["next_exp"],
-        self.stats["hp"], self.stats["max_hp"], self.stats["attack"], self.stats["defence"], self.stats["speed"]))
+        print("-%s-" % self.stats["name"])
+        print(("Lvl: %s" % (self.stats["level"])).ljust(12) + ("Exp: %s" % (self.stats["exp"])))
+        print(("Next lvl EXP: %s" % (self.stats["next_exp"])))
+        print(("HP:%s/%s" % (self.stats["hp"], self.stats["max_hp"])).ljust(12) + ("ゴールド: %s" % (self.stats["gold"])))
+        print(("ATK: %s" % (self.stats["attack"])).ljust(12) + ("DEF: %s" % (self.stats["defence"])))
+        display_message(("SPD: %s" % (self.stats["speed"])))
 
     def run(self, enemy):
-
         run_probability = int(((self.stats["speed"]/enemy.stats["speed"]) - 0.5) * 100)
 
         if (run_probability < 10):
@@ -57,6 +54,10 @@ SPD: %s""" % (self.stats["name"], self.stats["level"], self.stats["exp"], self.s
         self.stats["exp"] += gained_exp
         if (self.stats["exp"] >= self.stats["next_exp"]):
             self.level_up()
+
+    def gain_gold(self, dropped_gold):
+        display_message("%sゴールドを拾った。" % dropped_gold)
+        self.stats["gold"] += dropped_gold
 
     def level_up(self):
         levels_increased = 0
@@ -80,7 +81,6 @@ SPD: %s""" % (self.stats["name"], self.stats["level"], self.stats["exp"], self.s
         self.stats["defence"] += 1 * levels_increased
         self.stats["speed"] += 1 * levels_increased
 
-
 class Enemy(Character):
     LEVEL_RANGE = 3
 
@@ -95,6 +95,7 @@ class Enemy(Character):
         "speed": 0
         }
         self.obtainable_exp = 0
+        self.dropped_gold = 0
 
     def define_enemy(self, name, player_level):
         enemy_stats = {
@@ -121,6 +122,7 @@ class Enemy(Character):
         self.stats["speed"] = 1 + (self.stats["level"] - 1)
 
         self.obtainable_exp = 3 + self.stats["level"]
+        self.dropped_gold = randint(1,3)
 
     def set_goblin_stats(self):
         self.stats["name"] = "ゴブリン"
@@ -131,6 +133,7 @@ class Enemy(Character):
         self.stats["speed"] = 2 + (self.stats["level"])
 
         self.obtainable_exp = 3 + (2 * self.stats["level"])
+        self.dropped_gold = randint(1,5)
 
     def set_bandit_stats(self):
         self.stats["name"] = "盗賊"
@@ -141,6 +144,7 @@ class Enemy(Character):
         self.stats["speed"] = 1 + (self.stats["level"])
 
         self.obtainable_exp = 5 + (2 * self.stats["level"])
+        self.dropped_gold = randint(5,15)
 
 """
 import random, copy
