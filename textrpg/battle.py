@@ -79,6 +79,7 @@ class Battle:
     def player_victory(self):
         display_message("%sを倒した!" % (self.enemy.stats["name"]))
         self.player.gain_exp(self.enemy.obtainable_exp)
+        self.player.gain_gold(self.enemy.dropped_gold)
 
     def player_defeated(self):
         display_message("力が尽きた。")
