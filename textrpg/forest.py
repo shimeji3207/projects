@@ -15,6 +15,7 @@ class Forest:
         self.battle = Battle(player, self.enemy)
 
     def travel(self):
+        self.days_passed = 0
         display_message("～森～")
 
         while(self.days_passed < 3 + self.times_visited):
@@ -25,7 +26,9 @@ class Forest:
             if self.player.stats["hp"] <= 0:
                 return
 
-            self.rest_heal()
+            if (self.days_passed < 2):
+                self.rest_heal()
+            
             self.days_passed += 1
 
         display_message("街についた。")
