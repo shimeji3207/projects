@@ -1,11 +1,13 @@
 from character import Hero
 from system import display_message
 from forest import Forest
+from town import Town
 
 class TextRPG:
     def __init__(self):
         self.main_character = Hero()
         self.forest = Forest(self.main_character)
+        self.town = Town(self.main_character)
 
     def display_title(self):
         display_message("""「勇者の冒険」
@@ -30,33 +32,10 @@ Enterでゲームスタート""")
         self.forest.travel()
         if self.main_character.stats["hp"] <= 0:
             self.game_over()
+        self.town.explore()
 
     def game_over(self):
         display_message("ゲームオーバー")
 
 text_rpg = TextRPG()
 text_rpg.main()
-
-'''
-# Creation of the hero object
-hero = h.hero()
-
-# Creation of the monster element
-monster = m.monster()
-
-# Title
-print("「勇者の冒険」")
-
-# Asks the player for a name and initializes the hero
-g.game_start(hero)
-
-while hero.trips < hero.req_trips:
-    # Starts the players trip from one town to another
-    g.trip(hero,monster)
-
-    # Player arrives at the town
-    t.town(hero)
-
-g.trip(hero,monster)
-
-g.last_boss(hero,monster)'''
