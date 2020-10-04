@@ -1,5 +1,6 @@
 from system import display_message
 from random import randint
+from items import Item
 
 class Character:
     def attack(self, opponent):
@@ -28,6 +29,9 @@ class Hero(Character):
         "defence": 5,
         "speed": 5
         }
+        self.items = ["small_potion", "small_potion"]
+        self.item = Item(self)
+        self.turn_item_used = False
         self.ran = False
 
     def display_stats(self):
@@ -37,6 +41,76 @@ class Hero(Character):
         print(("HP:%s/%s" % (self.stats["hp"], self.stats["max_hp"])).ljust(12) + ("ゴールド: %s" % (self.stats["gold"])))
         print(("ATK: %s" % (self.stats["attack"])).ljust(12) + ("DEF: %s" % (self.stats["defence"])))
         display_message(("SPD: %s" % (self.stats["speed"])))
+
+    def calculate_menu_length(self, menu_number):
+        if (menu_number * 5 >= len(self.items)):
+            return len(self.items) - (5 * (menu_number - 1))
+        else:
+            return 5
+
+    def print_item_menu(self, menu_length, menu_number, max_menus):
+        for i in range((menu_number - 1), menu_length):
+            print("%s. %s" % (i + 1, self.item.ITEM_INFO[self.items[i]]["name"]))
+
+        if (max_menus > 1):
+            if (menu_number != max_menus):
+                print("n. 次のページ")
+            elif (menu_number == max_menus):
+                print("n. 最初のページに戻る")
+
+        print("b. 戻る")
+
+    def define_letter_commands(self, max_menus):
+        if (max_menus > 1):
+            return ("n", "b")
+        else:
+            return("b")
+
+    def item_menu(self):
+        menu_number = 1
+        max_menus = int((len(self.items) / 5) + 1)
+
+        while(True):
+            menu_length = self.calculate_menu_length(menu_number)
+
+            self.print_item_menu(menu_length, menu_number, max_menus)
+
+            letter_commands = self.define_letter_commands(max_menus)
+            command = self.get_item_menu_input(letter_commands)
+
+            if (command == "b"):
+                break
+            elif (command == "n"):
+                if (menu_number == 1) and (max_menus == 1):
+                    print("Invalid command")
+                    continue
+
+                if (menu_number == max_menus):
+                    menu_number = 1
+                else:
+                    menu_number += 1
+                continue
+
+            self.item.use_item(self.items[command - 1])
+            if (self.turn_item_used):
+                break
+
+    def get_item_menu_input(self, letter_commands):
+        while(True):
+            command = input().strip()
+
+            if (command in letter_commands):
+                return command
+            elif (command.isdigit()):
+                command = int(command)
+            else:
+                print("Invalid command")
+                continue
+
+            if command in list(range(1,len(self.items)+1)):
+                return command
+
+            print("Invalid command")
 
     def run(self, enemy):
         run_probability = int(((self.stats["speed"]/enemy.stats["speed"]) - 0.5) * 100)
