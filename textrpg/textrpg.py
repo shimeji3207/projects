@@ -30,12 +30,7 @@ Enterでゲームスタート""")
         self.prompt_heros_name()
         self.display_intro()
         self.forest.travel()
-        if self.main_character.stats["hp"] <= 0:
-            self.game_over()
         self.town.explore()
-
-    def game_over(self):
-        display_message("ゲームオーバー")
 
 text_rpg = TextRPG()
 text_rpg.main()
