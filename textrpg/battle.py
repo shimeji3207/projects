@@ -1,5 +1,7 @@
 import random, sys
 from system import display_message
+from item_menu import ItemMenu
+from item import Item
 
 class Battle:
     ATTACK = 1
@@ -11,6 +13,8 @@ class Battle:
         self.player_battle_command = None
         self.player = player
         self.enemy = enemy
+        self.item_menu_object = ItemMenu(self.player.items, "戻る")
+        self.item = Item(self.player, self.enemy)
 
     def obtain_battle_command(self):
         while (True):
@@ -26,11 +30,18 @@ class Battle:
         print("1. 攻撃\n2. ステータス\n3. アイテム\n4. 逃げる")
         self.player_battle_command = self.obtain_battle_command()
 
+    def item_menu(self):
+        option = self.item_menu_object.return_selected_option()
+        if (option is not None):
+            self.item.use_item(self.player.items[option])
+            self.player.items.pop(option)
+
+
     def start_battle(self):
         player_commands = {
         self.ATTACK: self.player.attack,
         self.DISPLAY_STATS: self.player.display_stats,
-        self.ITEM_MENU: self.player.item_menu,
+        self.ITEM_MENU: self.item_menu,
         self.RUN: self.player.run
         }
 
@@ -96,6 +107,11 @@ class Battle:
 
     def player_defeated(self):
         display_message("力が尽きた。")
-
+        self.game_over(self)
+        
+    def game_over(self):
+        display_message("ゲームオーバー")
+        sys.exit()
+        
     def player_ran(self):
         display_message("戦闘から逃げた。")
