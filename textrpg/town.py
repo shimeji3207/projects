@@ -1,17 +1,22 @@
 from system import display_message
+from item import Item
+from item_menu import ItemMenu
 
 class Town:
     INN = "1"
-    LEAVE = "2"
+    ITEM_SHOP = "2"
+    LEAVE = "3"
 
     def __init__(self, player):
         self.player = player
         self.destination = None
-        self.shop = Shop(self.player)
+        self.inn = Inn(self.player)
+        self.item_shop = ItemShop(self.player)
 
     def explore(self):
         destinations = {
-        self.INN: self.shop.inn
+        self.INN: self.inn.main,
+        self.ITEM_SHOP: self.item_shop.main
         }
 
         while(True):
@@ -27,34 +32,20 @@ class Town:
     def town_menu(self):
         print('行動を選択してください:')
         print("1. 宿屋")
-        print("2. 町を出る")
+        print("2. アイテムショップ")
+        print("3. 町を出る")
         self.get_destination()
 
     def get_destination(self):
         while (True):
             self.destination = input().strip()
 
-            if self.destination not in ("1", "2"):
+            if self.destination not in ("1", "2", "3"):
                 print("Invalid input")
             else:
                 break
 
 class Shop:
-    def __init__(self, player):
-        self.player = player
-        self.keeper_name = ""
-        self.shop_name = ""
-        self.greeting = ""
-        self.farewell = ""
-        self.service_price = 0
-
-    def inn(self):
-        self.define_inn()
-
-        self.enter_shop()
-        self.inn_service()
-        self.leave_shop()
-
     def enter_shop(self):
         display_message('～%s～' % (self.shop_name))
         display_message('%s:「%s」' % (self.keeper_name, self.greeting))
@@ -62,12 +53,28 @@ class Shop:
     def leave_shop(self):
         display_message('%s:「%s」' % (self.keeper_name, self.farewell))
 
-    def define_inn(self):
+    def get_yes_no_input(self):
+        while (True):
+            command = input().strip().lower()
+
+            if command in ("y", "n"):
+                return command
+            else:
+                print("Invalid input")
+
+class Inn(Shop):
+    def __init__(self, player):
+        self.player = player
         self.shop_name = "宿屋"
         self.keeper_name = "ヤドルミ"
         self.greeting = "いらっしゃいませ。"
         self.farewell = "またのご来店をお待ちしております。"
         self.service_price = 25
+
+    def main(self):
+        self.enter_shop()
+        self.inn_service()
+        self.leave_shop()
 
     def inn_service(self):
         display_message('%s:「一泊%sゴールドになります。」' % (self.keeper_name, self.service_price))
@@ -80,15 +87,6 @@ class Shop:
             else:
                 display_message('ゴールドが足りない・・・')
 
-    def get_yes_no_input(self):
-        while (True):
-            command = input().strip().lower()
-
-            if command in ("y", "n"):
-                return command
-            else:
-                print("Invalid input")
-
     def inn_rest(self):
         display_message('%s:「ごゆっくりどうぞ。」' % (self.keeper_name))
         display_message('宿屋に一泊した')
@@ -97,3 +95,53 @@ class Shop:
         #player.stats['day'] += 1
         self.player.stats["gold"] -= self.service_price
         display_message('HPが全回復した。')
+
+class ItemShop(Shop):
+    def __init__(self, player):
+        self.player = player
+        self.shop_name = "アイテムショップ"
+        self.keeper_name = "ミセリーナ"
+        self.greeting = "いらっしゃいませ!"
+        self.farewell = "ありがとうございました！"
+        self.inventory = ["small_potion", "small_potion", "small_potion"]
+        self.purchase_index = None
+        self.shop_visited = True
+        self.item = Item()
+        self.item_menu = ItemMenu(self.inventory, "広場に戻る")
+
+    def main(self):
+        self.enter_shop()
+        self.browse_shop()
+        self.leave_shop()
+
+    def browse_shop(self):
+        display_message("何をお買い上げになりますか？　（ゴールド: %s)" % (self.player.stats["gold"]))
+        while (True):
+            self.purchase_index = self.item_menu.return_selected_option()
+            if(self.purchase_index is not None):
+                self.purchase_item()
+            else:
+                break
+            
+    def purchase_item(self):
+        if (self.purchase_confirmed()):
+            if (self.item.return_item_price(self.inventory[self.purchase_index]) > self.player.stats["gold"]):
+                display_message('ゴールドが足りない・・・')
+            else:
+                self.make_purchase()
+                
+    def purchase_confirmed(self):
+        self.item.display_item_info(self.inventory[self.purchase_index])
+        self.item.display_item_price(self.inventory[self.purchase_index])
+        print("このアイテムを買いますか？(y/n):")
+        command = self.get_yes_no_input()
+        
+        if (command == "y"):
+            return True
+            
+        return False
+        
+    def make_purchase(self):
+        self.player.stats["gold"] -= self.item.return_item_price(self.inventory[self.purchase_index])
+        self.player.items.append(self.inventory[self.purchase_index])
+        self.inventory.pop(self.purchase_index)
