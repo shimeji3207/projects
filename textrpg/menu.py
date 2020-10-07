@@ -1,17 +1,15 @@
-from item import Item
-
-class ItemMenu:
+class Menu:
     MAX_MENU_LENGTH = 5
 
-    def __init__(self, items, return_option):
+    def __init__(self, item_info, items, return_option):
         self.items = items
+        self.item_info = item_info
         self.menu_length = 0
         self.menu_number = 0
         self.max_menus = 0
         self.command = ""
         self.return_option = return_option
         self.letter_commands = []
-        self.item = Item()
         self.menu_starting_index = 0
         self.menu_end_index = 0
 
@@ -63,7 +61,7 @@ class ItemMenu:
 
     def print_item_menu(self):
         for i in range(self.menu_starting_index, self.menu_end_index):
-            print("%s. %s" % (i, self.item.ITEM_INFO[self.items[i - 1]]["name"]))
+            print("%s. %s" % (i, self.item_info[self.items[i - 1]]["name"]))
 
         if (self.max_menus > 1):
             if (self.menu_number != self.max_menus):
@@ -95,6 +93,3 @@ class ItemMenu:
                 break
 
             print("Invalid command")
-"""
-item_menu = ItemMenu(["small_potion", "small_potion", "small_potion", "small_potion", "small_potion", "small_potion"])
-print(item_menu.return_selected_option())"""
