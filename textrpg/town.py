@@ -1,6 +1,6 @@
 from system import display_message
 from item import Item
-from item_menu import ItemMenu
+from menu import Menu
 
 class Town:
     INN = "1"
@@ -107,7 +107,7 @@ class ItemShop(Shop):
         self.purchase_index = None
         self.shop_visited = True
         self.item = Item()
-        self.item_menu = ItemMenu(self.inventory, "広場に戻る")
+        self.menu = Menu(Item.ITEM_INFO, self.inventory, "広場に戻る")
 
     def main(self):
         self.enter_shop()
@@ -117,30 +117,30 @@ class ItemShop(Shop):
     def browse_shop(self):
         display_message("何をお買い上げになりますか？　（ゴールド: %s)" % (self.player.stats["gold"]))
         while (True):
-            self.purchase_index = self.item_menu.return_selected_option()
+            self.purchase_index = self.menu.return_selected_option()
             if(self.purchase_index is not None):
                 self.purchase_item()
             else:
                 break
-            
+
     def purchase_item(self):
         if (self.purchase_confirmed()):
             if (self.item.return_item_price(self.inventory[self.purchase_index]) > self.player.stats["gold"]):
                 display_message('ゴールドが足りない・・・')
             else:
                 self.make_purchase()
-                
+
     def purchase_confirmed(self):
         self.item.display_item_info(self.inventory[self.purchase_index])
         self.item.display_item_price(self.inventory[self.purchase_index])
         print("このアイテムを買いますか？(y/n):")
         command = self.get_yes_no_input()
-        
+
         if (command == "y"):
             return True
-            
+
         return False
-        
+
     def make_purchase(self):
         self.player.stats["gold"] -= self.item.return_item_price(self.inventory[self.purchase_index])
         self.player.items.append(self.inventory[self.purchase_index])
