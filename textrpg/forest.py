@@ -7,18 +7,23 @@ class Forest:
     ENEMIES = ["goblin", "slime", "bandit"]
 
     def __init__(self, player):
-        self.times_visited = 0
         self.days_passed = 0
-        self.encounter_rate = 6
+        self.days_till_destination = 0
+        self.encounter_rate = 7
         self.enemy = Enemy()
         self.player = player
         self.battle = Battle(player, self.enemy)
+        
+    def set_parameters(self):
+        self.days_passed = 0
+        self.days_till_destination = randint(3,5)
 
     def travel(self):
-        self.days_passed = 0
+        self.set_parameters()
+        
         display_message("～森～")
 
-        while(self.days_passed < 3 + self.times_visited):
+        while(self.days_passed < self.days_till_destination):
             display_message("<%s日目>" % (self.days_passed + 1))
 
             self.event()
@@ -26,13 +31,12 @@ class Forest:
             if self.player.stats["hp"] <= 0:
                 return
 
-            if (self.days_passed < 2):
+            if (self.days_passed < self.days_till_destination - 1):
                 self.rest_heal()
-            
+
             self.days_passed += 1
 
-        display_message("街についた。")
-        self.times_visited += 1
+        display_message("町についた。")
 
     def event(self):
         if(randint(0,9) < self.encounter_rate):
