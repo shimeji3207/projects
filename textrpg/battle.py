@@ -1,7 +1,8 @@
 import random, sys
 from system import display_message
-from item_menu import ItemMenu
+from menu import Menu
 from item import Item
+from special_attack import SpecialAttack
 
 class Battle:
     ATTACK = 1
@@ -13,7 +14,8 @@ class Battle:
         self.player_battle_command = None
         self.player = player
         self.enemy = enemy
-        self.item_menu_object = ItemMenu(self.player.items, "戻る")
+        self.item_menu_object = Menu(Item.ITEM_INFO, self.player.items, "戻る")
+        self.special_attack_menu_object = Menu(SpecialAttack.ATTACK_INFO, self.player.special_attacks, "戻る")
         self.item = Item(self.player, self.enemy)
 
     def obtain_battle_command(self):
@@ -36,7 +38,6 @@ class Battle:
             self.item.use_item(self.player.items[option])
             self.player.items.pop(option)
 
-
     def start_battle(self):
         player_commands = {
         self.ATTACK: self.player.attack,
@@ -46,6 +47,7 @@ class Battle:
         }
 
         while(self.player.stats["hp"] > 0 and self.enemy.stats["hp"] > 0):
+            self.player.turn_item_used = False
 
             self.battle_menu()
 
@@ -83,8 +85,6 @@ class Battle:
                 return
 
     def battle_ended(self):
-        self.player.turn_item_used = False
-
         if(self.enemy.stats["hp"] <= 0):
             self.player_victory()
             return True
@@ -107,11 +107,11 @@ class Battle:
 
     def player_defeated(self):
         display_message("力が尽きた。")
-        self.game_over(self)
-        
+        self.game_over()
+
     def game_over(self):
         display_message("ゲームオーバー")
         sys.exit()
-        
+
     def player_ran(self):
         display_message("戦闘から逃げた。")
