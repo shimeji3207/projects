@@ -5,14 +5,39 @@ class Character:
     def attack(self, opponent):
         display_message("%sの攻撃!" % (self.stats["name"]))
 
+        if (self.evade(opponent.stats["speed"])):
+            display_message("%sが攻撃をかわした。" % (opponent.stats["name"]))
+            return
+
         damage = int(self.stats["attack"] - (opponent.stats["defence"]/2))
 
         if damage <= 0:
             damage = 1
 
+        if (randint(0,99) < self.stats["critical"]):
+            display_message("クリティカルヒット！")
+            damage = self.return_critical_damage(damage)
+
         opponent.stats["hp"] -= int(damage)
 
         display_message("%sに%sのダメージを与えた。" % (opponent.stats["name"], damage))
+
+    def evade(self, opponent_speed):
+        evade_probability = int(((opponent_speed/self.stats["speed"]) - 0.8) * 100)
+
+        if (evade_probability < 10):
+            evade_probability = 10
+
+        if (evade_probability > 90):
+            evade_probability = 90
+
+        if (randint(0, 99) < evade_probability):
+            return True
+
+        return False
+
+    def return_critical_damage(self, damage):
+        return int(damage*1.5)
 
 class Hero(Character):
     def __init__(self):
@@ -24,11 +49,15 @@ class Hero(Character):
         "gold": 0,
         "max_hp": 20,
         "hp": 20,
+        "max_mp": 10,
+        "mp": 10,
+        "critical": 10,
         "attack": 5,
         "defence": 5,
         "speed": 5
         }
         self.items = ["small_potion", "small_potion"]
+        self.special_attacks = ["counter"]
         self.turn_item_used = False
         self.ran = False
 
@@ -92,6 +121,7 @@ class Enemy(Character):
         "level": 1,
         "max_hp": 0,
         "hp": 0,
+        "critical": 0,
         "attack": 0,
         "defence": 0,
         "speed": 0
@@ -122,6 +152,7 @@ class Enemy(Character):
         self.stats["attack"] = 1 + (self.stats["level"] - 1)
         self.stats["defence"] = 1 + (self.stats["level"] - 1)
         self.stats["speed"] = 1 + (self.stats["level"] - 1)
+        self.stats["critical"] = 2
 
         self.obtainable_exp = 3 + self.stats["level"]
         self.dropped_gold = randint(1,3)
@@ -133,6 +164,7 @@ class Enemy(Character):
         self.stats["attack"] = 2 + (self.stats["level"])
         self.stats["defence"] = 1 + (self.stats["level"])
         self.stats["speed"] = 2 + (self.stats["level"])
+        self.stats["critical"] = 4
 
         self.obtainable_exp = 3 + (2 * self.stats["level"])
         self.dropped_gold = randint(1,5)
@@ -144,6 +176,7 @@ class Enemy(Character):
         self.stats["attack"] = 2 + (self.stats["level"])
         self.stats["defence"] = 2 + (self.stats["level"])
         self.stats["speed"] = 1 + (self.stats["level"])
+        self.stats["critical"] = 5
 
         self.obtainable_exp = 5 + (2 * self.stats["level"])
         self.dropped_gold = randint(5,15)
