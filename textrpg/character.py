@@ -133,7 +133,10 @@ class Enemy(Character):
         enemy_stats = {
         "goblin": self.set_goblin_stats,
         "slime": self.set_slime_stats,
-        "bandit": self.set_bandit_stats
+        "bandit": self.set_bandit_stats,
+        "skeleton": self.set_skeleton_stats,
+        "werewolf": self.set_werewolf_stats,
+        "large_spider": self.set_large_spider_stats
         }
 
         self.set_level(player_level)
@@ -180,3 +183,39 @@ class Enemy(Character):
 
         self.obtainable_exp = 5 + (2 * self.stats["level"])
         self.dropped_gold = randint(5,15)
+
+    def set_skeleton_stats(self):
+        self.stats["name"] = "スケルトン"
+        self.stats["max_hp"] = 15 + (self.stats["level"] + 1)
+        self.stats["hp"] = self.stats["max_hp"]
+        self.stats["attack"] = 4 + (self.stats["level"])
+        self.stats["defence"] = 4 + (self.stats["level"])
+        self.stats["speed"] = 3 + (self.stats["level"])
+        self.stats["critical"] = 5
+
+        self.obtainable_exp = 8 + (2 * self.stats["level"])
+        self.dropped_gold = randint(5, 15)
+
+    def set_werewolf_stats(self):
+        self.stats["name"] = "狼男"
+        self.stats["max_hp"] = 20 + (self.stats["level"] + 1)
+        self.stats["hp"] = self.stats["max_hp"]
+        self.stats["attack"] = 6 + (self.stats["level"])
+        self.stats["defence"] = 4 + (self.stats["level"])
+        self.stats["speed"] = 6 + (self.stats["level"])
+        self.stats["critical"] = 10
+
+        self.obtainable_exp = 12 + (2 * self.stats["level"])
+        self.dropped_gold = randint(5, 15)
+
+    def set_large_spider_stats(self):
+        self.stats["name"] = "でかい蜘蛛"
+        self.stats["max_hp"] = 15 + (self.stats["level"] + 1)
+        self.stats["hp"] = self.stats["max_hp"]
+        self.stats["attack"] = 5 + (self.stats["level"])
+        self.stats["defence"] = 3 + (self.stats["level"])
+        self.stats["speed"] = 5 + (self.stats["level"])
+        self.stats["critical"] = 5
+
+        self.obtainable_exp = 10 + (2 * self.stats["level"])
+        self.dropped_gold = randint(5, 15)
