@@ -12,7 +12,7 @@ class Item:
     def __init__(self, player = None, enemy = None):
         self.player = player
         self.enemy = enemy
-        
+
     def return_item_price(self, item_name):
         return self.ITEM_INFO[item_name]["price"]
 
@@ -26,9 +26,9 @@ class Item:
     def display_item_info(self, item):
         print("アイテム: %s" % (self.ITEM_INFO[item]["name"]))
         print("効果: %s" % (self.ITEM_INFO[item]["effect"]))
-        
+
     def display_item_price(self, item):
-        print("値段: %sゴールド" % (self.ITEM_INFO[item]["effect"]))
+        print("値段: %sゴールド" % (self.ITEM_INFO[item]["price"]))
 
     def use_potion(self):
         display_message("%sを使った。" % (self.ITEM_INFO["small_potion"]["name"]))
