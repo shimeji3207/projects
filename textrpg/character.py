@@ -1,5 +1,6 @@
 from system import display_message
 from random import randint
+from item import Item
 
 class Character:
     def attack(self, opponent):
@@ -40,6 +41,16 @@ class Character:
         return int(damage*1.5)
 
 class Hero(Character):
+    REGION_NAMES = {
+    "head": "頭",
+    "chest": "胴体",
+    "arms": "腕",
+    "right_hand": "右手",
+    "left_hand": "左手",
+    "legs": "脚",
+    "feet": "足"
+    }
+
     def __init__(self):
         self.stats = {
         "name": "",
@@ -56,18 +67,62 @@ class Hero(Character):
         "defence": 5,
         "speed": 5
         }
+        self.equipped_items = {
+        "head": "none",
+        "chest": "leather_chestplate",
+        "arms": "none",
+        "left_hand": "none",
+        "right_hand": "sword",
+        "legs": "none",
+        "feet": "none"
+        }
+        self.item_object = Item(self)
+        self.equip_initial_items()
         self.items = ["small_potion", "small_potion"]
         self.special_attacks = ["counter"]
         self.turn_item_used = False
         self.ran = False
 
+    def equip_initial_items(self):
+        for equipment in self.equipped_items.values():
+            if equipment != "none":
+                self.item_object.initial_equip(equipment)
+
     def display_stats(self):
+        print("～ステータス～")
         print("-%s-" % self.stats["name"])
         print(("Lvl: %s" % (self.stats["level"])).ljust(12) + ("Exp: %s" % (self.stats["exp"])))
         print(("Next lvl EXP: %s" % (self.stats["next_exp"])))
         print(("HP:%s/%s" % (self.stats["hp"], self.stats["max_hp"])).ljust(12) + ("ゴールド: %s" % (self.stats["gold"])))
         print(("ATK: %s" % (self.stats["attack"])).ljust(12) + ("DEF: %s" % (self.stats["defence"])))
         display_message(("SPD: %s" % (self.stats["speed"])))
+        self.display_equipped_items()
+        
+    def find_longest_equipment_name(self):
+        longest_name_length = len("無し")
+        for equipment in self.equipped_items.values():
+            if equipment != "none" and len(self.item_object.ITEM_INFO[equipment]["name"]) > longest_name_length:
+                longest_name_length = len(self.item_object.ITEM_INFO[equipment]["name"])
+        return longest_name_length
+        
+    def display_equipped_items(self):
+        print("～装備～")
+        counter = 1
+        longest_name_length = self.find_longest_equipment_name()
+        
+        for region, equipment in self.equipped_items.items():
+            if equipment == "none":
+                equipment_name = "無し"
+            else:
+                equipment_name = self.item_object.ITEM_INFO[equipment]["name"]
+            
+            if (counter == 7):
+                display_message("%s: %s" % (self.REGION_NAMES[region].ljust(2), equipment_name.ljust(longest_name_length)))
+            elif (counter % 2 == 0):
+                print("%s: %s" % (self.REGION_NAMES[region].ljust(2), equipment_name.ljust(longest_name_length)))
+            else:
+                print("%s: %s" % (self.REGION_NAMES[region].ljust(2), equipment_name.ljust(longest_name_length)), end = "")
+            counter += 1
 
     def run(self, enemy):
         run_probability = int(((self.stats["speed"]/enemy.stats["speed"]) - 0.5) * 100)
@@ -136,7 +191,8 @@ class Enemy(Character):
         "bandit": self.set_bandit_stats,
         "skeleton": self.set_skeleton_stats,
         "werewolf": self.set_werewolf_stats,
-        "large_spider": self.set_large_spider_stats
+        "large_spider": self.set_large_spider_stats,
+        "last_boss": self.set_last_boss_stats
         }
 
         self.set_level(player_level)
@@ -219,3 +275,15 @@ class Enemy(Character):
 
         self.obtainable_exp = 10 + (2 * self.stats["level"])
         self.dropped_gold = randint(5, 15)
+
+    def set_last_boss_stats(self):
+        self.stats["name"] = "魔王"
+        self.stats["max_hp"] = 30 + (self.stats["level"] + 1)
+        self.stats["hp"] = self.stats["max_hp"]
+        self.stats["attack"] = 7 + (2 * self.stats["level"])
+        self.stats["defence"] = 7 + (self.stats["level"])
+        self.stats["speed"] = 7 + (self.stats["level"])
+        self.stats["critical"] = 10
+
+        self.obtainable_exp = 20 + (2 * self.stats["level"])
+        self.dropped_gold = randint(15, 30)
