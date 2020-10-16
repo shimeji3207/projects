@@ -1,15 +1,17 @@
 from character import Hero
 from system import display_message
 from travelarea import Forest, HauntedForest
+from last_castle import LastCastle
 from town import Town
 
 class TextRPG:
-    NUMBER_OF_TRIPS = 1
+    NUMBER_OF_TRIPS = 3
 
     def __init__(self):
         self.main_character = Hero()
         self.forest = Forest(self.main_character)
         self.haunted_forest = HauntedForest(self.main_character)
+        self.last_castle = LastCastle(self.main_character)
         self.town = Town(self.main_character)
 
     def display_title(self):
@@ -33,6 +35,8 @@ Enterでゲームスタート""")
         self.prompt_heros_name()
         self.display_intro()
         self.journey_to_boss_castle()
+        self.last_castle.travel()
+        display_message("ゲームクリア!")
 
     def journey_to_boss_castle(self):
         for i in range(0, self.NUMBER_OF_TRIPS):
