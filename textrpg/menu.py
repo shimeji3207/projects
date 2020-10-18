@@ -1,9 +1,11 @@
+from item_info import ITEM_INFO
+
 class Menu:
     MAX_MENU_LENGTH = 5
 
-    def __init__(self, item_info, items, return_option):
+    def __init__(self, items, return_option):
         self.items = items
-        self.item_info = item_info
+        self.item_info = ITEM_INFO
         self.menu_length = 0
         self.menu_number = 0
         self.max_menus = 0
