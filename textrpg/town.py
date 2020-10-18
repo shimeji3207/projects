@@ -5,18 +5,21 @@ from menu import Menu
 class Town:
     INN = "1"
     ITEM_SHOP = "2"
-    LEAVE = "3"
+    WEAPON_SHOP = "3"
+    LEAVE = "4"
 
     def __init__(self, player):
         self.player = player
         self.destination = None
         self.inn = Inn(self.player)
         self.item_shop = ItemShop(self.player)
+        self.weapon_shop = WeaponShop(self.player)
 
     def explore(self):
         destinations = {
         self.INN: self.inn.main,
-        self.ITEM_SHOP: self.item_shop.main
+        self.ITEM_SHOP: self.item_shop.main,
+        self.WEAPON_SHOP: self.weapon_shop.main
         }
 
         while(True):
@@ -33,14 +36,15 @@ class Town:
         print('行動を選択してください:')
         print("1. 宿屋")
         print("2. アイテムショップ")
-        print("3. 町を出る")
+        print("3. 武器屋")
+        print("4. 町を出る")
         self.get_destination()
 
     def get_destination(self):
         while (True):
             self.destination = input().strip()
 
-            if self.destination not in ("1", "2", "3"):
+            if self.destination not in ("1", "2", "3", "4"):
                 print("Invalid input")
             else:
                 break
@@ -61,7 +65,7 @@ class Shop:
                 return command
             else:
                 print("Invalid input")
-
+                
 class Inn(Shop):
     def __init__(self, player):
         self.player = player
@@ -102,12 +106,13 @@ class ItemShop(Shop):
         self.shop_name = "アイテムショップ"
         self.keeper_name = "ミセリーナ"
         self.greeting = "いらっしゃいませ!"
+        self.browsing_line = "何をお買い上げになりますか?"
         self.farewell = "ありがとうございました！"
         self.inventory = ["small_potion", "small_potion", "small_potion"]
         self.purchase_index = None
         self.shop_visited = True
         self.item = Item()
-        self.menu = Menu(Item.ITEM_INFO, self.inventory, "広場に戻る")
+        self.menu = Menu(self.inventory, "広場に戻る")
 
     def main(self):
         self.enter_shop()
@@ -115,7 +120,7 @@ class ItemShop(Shop):
         self.leave_shop()
 
     def browse_shop(self):
-        display_message("何をお買い上げになりますか？　（ゴールド: %s)" % (self.player.stats["gold"]))
+        display_message("%s　（ゴールド: %s)" % (self.browsing_line, self.player.stats["gold"]))
         while (True):
             self.purchase_index = self.menu.return_selected_option()
             if(self.purchase_index is not None):
@@ -145,3 +150,17 @@ class ItemShop(Shop):
         self.player.stats["gold"] -= self.item.return_item_price(self.inventory[self.purchase_index])
         self.player.items.append(self.inventory[self.purchase_index])
         self.inventory.pop(self.purchase_index)
+        
+class WeaponShop(ItemShop):
+    def __init__(self, player):
+        self.player = player
+        self.shop_name = "武器屋"
+        self.keeper_name = "ブキーロ"
+        self.greeting = "へい、いらっしゃい!"
+        self.browsing_line = "何を買うんだ？"
+        self.farewell = "また来いよ！"
+        self.inventory = ["claymore", "shield"]
+        self.purchase_index = None
+        self.shop_visited = True
+        self.item = Item()
+        self.menu = Menu(self.inventory, "広場に戻る")
