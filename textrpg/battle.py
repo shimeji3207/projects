@@ -3,6 +3,7 @@ from system import display_message
 from menu import Menu
 from item import Item
 from special_attack import SpecialAttack
+from item_info import ITEM_INFO
 
 class Battle:
     ATTACK = 1
@@ -14,8 +15,8 @@ class Battle:
         self.player_battle_command = None
         self.player = player
         self.enemy = enemy
-        self.item_menu_object = Menu(Item.ITEM_INFO, self.player.items, "戻る")
-        self.special_attack_menu_object = Menu(SpecialAttack.ATTACK_INFO, self.player.special_attacks, "戻る")
+        self.item_menu_object = Menu(self.player.items, "戻る")
+        self.special_attack_menu_object = Menu(self.player.special_attacks, "戻る")
         self.item = Item(self.player, self.enemy)
 
     def obtain_battle_command(self):
@@ -33,10 +34,12 @@ class Battle:
         self.player_battle_command = self.obtain_battle_command()
 
     def item_menu(self):
+        self.player.items.sort()
         option = self.item_menu_object.return_selected_option()
         if (option is not None):
             self.item.use_item(self.player.items[option])
-            self.player.items.pop(option)
+            if ITEM_INFO[self.player.items[option]]["type"] == "potion":
+                self.player.items.pop(option)
 
     def start_battle(self):
         player_commands = {
