@@ -69,24 +69,23 @@ class Hero(Character):
         }
         self.equipped_items = {
         "head": "none",
-        "chest": "leather_chestplate",
+        "chest": "none",
         "arms": "none",
         "left_hand": "none",
-        "right_hand": "sword",
+        "right_hand": "none",
         "legs": "none",
         "feet": "none"
         }
         self.item_object = Item(self)
         self.equip_initial_items()
-        self.items = ["small_potion", "small_potion"]
+        self.items = ["leather_chestplate", "sword", "small_potion", "small_potion"]
         self.special_attacks = ["counter"]
         self.turn_item_used = False
         self.ran = False
 
     def equip_initial_items(self):
-        for equipment in self.equipped_items.values():
-            if equipment != "none":
-                self.item_object.initial_equip(equipment)
+        self.item_object.initial_equip("leather_chestplate")
+        self.item_object.initial_equip("sword")
 
     def display_stats(self):
         print("～ステータス～")
@@ -97,25 +96,18 @@ class Hero(Character):
         print(("ATK: %s" % (self.stats["attack"])).ljust(12) + ("DEF: %s" % (self.stats["defence"])))
         display_message(("SPD: %s" % (self.stats["speed"])))
         self.display_equipped_items()
-        
-    def find_longest_equipment_name(self):
-        longest_name_length = len("無し")
-        for equipment in self.equipped_items.values():
-            if equipment != "none" and len(self.item_object.ITEM_INFO[equipment]["name"]) > longest_name_length:
-                longest_name_length = len(self.item_object.ITEM_INFO[equipment]["name"])
-        return longest_name_length
-        
+
     def display_equipped_items(self):
         print("～装備～")
         counter = 1
-        longest_name_length = self.find_longest_equipment_name()
-        
+        longest_name_length = self.item_object.find_longest_equipment_name()
+
         for region, equipment in self.equipped_items.items():
             if equipment == "none":
                 equipment_name = "無し"
             else:
-                equipment_name = self.item_object.ITEM_INFO[equipment]["name"]
-            
+                equipment_name = self.item_object.return_item_name(equipment)
+
             if (counter == 7):
                 display_message("%s: %s" % (self.REGION_NAMES[region].ljust(2), equipment_name.ljust(longest_name_length)))
             elif (counter % 2 == 0):
@@ -166,6 +158,10 @@ class Hero(Character):
         self.stats["attack"] += 2 * levels_increased
         self.stats["defence"] += 1 * levels_increased
         self.stats["speed"] += 1 * levels_increased
+
+"""
+hero = Hero()
+hero.display_stats()"""
 
 class Enemy(Character):
     LEVEL_RANGE = 3
