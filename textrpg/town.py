@@ -1,4 +1,4 @@
-from system import display_message
+from system import display_message, get_yes_no_input
 from item import Item
 from menu import Menu
 
@@ -57,15 +57,6 @@ class Shop:
     def leave_shop(self):
         display_message('%s:「%s」' % (self.keeper_name, self.farewell))
 
-    def get_yes_no_input(self):
-        while (True):
-            command = input().strip().lower()
-
-            if command in ("y", "n"):
-                return command
-            else:
-                print("Invalid input")
-                
 class Inn(Shop):
     def __init__(self, player):
         self.player = player
@@ -85,7 +76,7 @@ class Inn(Shop):
         print('HP：%s/%s ゴールド: %s' %(self.player.stats['hp'], self.player.stats['max_hp'], self.player.stats["gold"]))
         print('一晩泊まりますか？(y/n)')
 
-        if (self.get_yes_no_input() == "y"):
+        if (get_yes_no_input() == "y"):
             if self.player.stats["gold"] >= self.service_price:
                 self.inn_rest()
             else:
@@ -139,9 +130,8 @@ class ItemShop(Shop):
         self.item.display_item_info(self.inventory[self.purchase_index])
         self.item.display_item_price(self.inventory[self.purchase_index])
         print("このアイテムを買いますか？(y/n):")
-        command = self.get_yes_no_input()
 
-        if (command == "y"):
+        if (get_yes_no_input() == "y"):
             return True
 
         return False
@@ -150,7 +140,7 @@ class ItemShop(Shop):
         self.player.stats["gold"] -= self.item.return_item_price(self.inventory[self.purchase_index])
         self.player.items.append(self.inventory[self.purchase_index])
         self.inventory.pop(self.purchase_index)
-        
+
 class WeaponShop(ItemShop):
     def __init__(self, player):
         self.player = player
