@@ -79,7 +79,8 @@ class Hero(Character):
         self.item_object = Item(self)
         self.equip_initial_items()
         self.items = ["leather_chestplate", "sword", "small_potion", "small_potion"]
-        self.special_attacks = ["counter"]
+        self.event_battle_run_away_line = "ごめんなさい！"
+        self.event_run_away_line = "俺が助けなくても大丈夫だろう。多分・・・"
         self.turn_item_used = False
         self.ran = False
 
