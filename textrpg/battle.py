@@ -16,7 +16,7 @@ class Battle:
         self.player = player
         self.enemy = enemy
         self.item_menu_object = Menu(self.player.items, "戻る")
-        self.special_attack_menu_object = Menu(self.player.special_attacks, "戻る")
+        #self.special_attack_menu_object = Menu(self.player.special_attacks, "戻る")
         self.item = Item(self.player, self.enemy)
 
     def obtain_battle_command(self):
@@ -41,6 +41,9 @@ class Battle:
             if ITEM_INFO[self.player.items[option]]["type"] == "potion":
                 self.player.items.pop(option)
 
+    def reset_player_battle_status(self):
+        self.player.ran = False
+
     def start_battle(self):
         player_commands = {
         self.ATTACK: self.player.attack,
@@ -48,6 +51,8 @@ class Battle:
         self.ITEM_MENU: self.item_menu,
         self.RUN: self.player.run
         }
+
+        self.reset_player_battle_status()
 
         while(self.player.stats["hp"] > 0 and self.enemy.stats["hp"] > 0):
             self.player.turn_item_used = False
@@ -98,7 +103,6 @@ class Battle:
 
         if(self.player.ran):
             self.player_ran()
-            self.player.ran = False
             return True
 
         return False
