@@ -4,6 +4,7 @@ from menu import Menu
 from item import Item
 from special_attack import SpecialAttack
 from item_info import ITEM_INFO
+from character import Hero, Enemy
 
 class Battle:
     ATTACK = 1
@@ -55,8 +56,6 @@ class Battle:
         self.reset_player_battle_status()
 
         while(self.player.stats["hp"] > 0 and self.enemy.stats["hp"] > 0):
-            self.player.turn_item_used = False
-
             self.battle_menu()
 
             if (self.player_battle_command == self.DISPLAY_STATS):
@@ -74,20 +73,22 @@ class Battle:
             # Determines who attacks first depending on speed
             if (self.player.stats["speed"] > self.enemy.stats["speed"] or self.player_battle_command == self.RUN):
                 player_commands[self.player_battle_command](self.enemy)
-                #print("Enemy hp: %s" % (self.enemy.stats["hp"]))
+                print("Enemy hp: %s" % (self.enemy.stats["hp"]))
 
                 if (self.battle_ended()):
                     return
 
                 self.enemy.attack(self.player)
-                #print("Player hp: %s" % (self.player.stats["hp"]))
+                print("Player hp: %s" % (self.player.stats["hp"]))
             else:
                 self.enemy.attack(self.player)
+                print("Player hp: %s" % (self.player.stats["hp"]))
 
                 if (self.battle_ended()):
                     return
 
                 player_commands[self.player_battle_command](self.enemy)
+                print("Enemy hp: %s" % (self.enemy.stats["hp"]))
 
             if (self.battle_ended()):
                 return
