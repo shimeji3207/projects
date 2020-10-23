@@ -10,7 +10,7 @@ class Character:
             display_message("%sが攻撃をかわした。" % (opponent.stats["name"]))
             return
 
-        damage = int(self.stats["attack"] - (opponent.stats["defence"]/2))
+        damage = self.stats["attack"] - (opponent.stats["defence"]/2)
 
         if damage <= 0:
             damage = 1
@@ -19,8 +19,9 @@ class Character:
             display_message("クリティカルヒット！")
             damage = self.return_critical_damage(damage)
 
-        opponent.stats["hp"] -= int(damage)
+        damage = int(damage)
 
+        opponent.stats["hp"] -= damage
         display_message("%sに%sのダメージを与えた。" % (opponent.stats["name"], damage))
 
     def evade(self, opponent_speed):
@@ -38,7 +39,7 @@ class Character:
         return False
 
     def return_critical_damage(self, damage):
-        return int(damage*1.5)
+        return damage*1.5
 
 class Hero(Character):
     REGION_NAMES = {
@@ -159,10 +160,6 @@ class Hero(Character):
         self.stats["attack"] += 2 * levels_increased
         self.stats["defence"] += 1 * levels_increased
         self.stats["speed"] += 1 * levels_increased
-
-"""
-hero = Hero()
-hero.display_stats()"""
 
 class Enemy(Character):
     LEVEL_RANGE = 3
