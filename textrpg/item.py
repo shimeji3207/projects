@@ -23,7 +23,7 @@ class Item:
     def initial_equip(self, item_name):
         self.item_name = item_name
         self.equip_item()
-        
+
     def equip_status(self):
         #display_message("check status")
         #print(self.player.equipped_items.values())
@@ -40,6 +40,7 @@ class Item:
             if (self.equip_status()):
                 self.unequip_item()
                 return
+            self.unequip_overlapping_equipment()
             self.equip_item()
             display_message("%sを装備した。" % (ITEM_INFO[self.item_name]["name"]))
 
@@ -74,7 +75,7 @@ class Item:
             self.player.equipped_items["right_hand"] = self.item_name
         else:
             self.player.equipped_items[ITEM_INFO[self.item_name]["equip_region"]] = self.item_name
-            
+
     def unequip_item_from_player(self):
         if ITEM_INFO[self.item_name]["equip_region"] == "both_hands":
             self.player.equipped_items["left_hand"] = "none"
@@ -85,14 +86,14 @@ class Item:
     def add_equipment_stats(self):
         for stat, stat_change in ITEM_INFO[self.item_name]["stat_change"].items():
             self.player.stats[stat] += stat_change
-            
+
     def remove_equipment_stats(self):
         for stat, stat_change in ITEM_INFO[self.item_name]["stat_change"].items():
             self.player.stats[stat] -= stat_change
-            
-    def unequip_overlaping_equipment(self):
+
+    def unequip_overlapping_equipment(self):
         if ITEM_INFO[self.item_name]["region"] == "both_hands":
-            if (self.player.equipped_items["left_hand"] != "none") and (self.player.equipped_items["right_hand"] != "none"):
+            if (self.player.equipped_items["left_hand"] != "none") or (self.player.equipped_items["right_hand"] != "none"):
                 for region in ("left_hand", "right_hand"):
                     if self.player.equipped_items[region] != "none":
                         self.unequip_item(self.player.equipped_items[region])
