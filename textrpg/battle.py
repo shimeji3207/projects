@@ -73,22 +73,22 @@ class Battle:
             # Determines who attacks first depending on speed
             if (self.player.stats["speed"] > self.enemy.stats["speed"] or self.player_battle_command == self.RUN):
                 player_commands[self.player_battle_command](self.enemy)
-                print("Enemy hp: %s" % (self.enemy.stats["hp"]))
+                #print("Enemy hp: %s" % (self.enemy.stats["hp"]))
 
                 if (self.battle_ended()):
                     return
 
                 self.enemy.attack(self.player)
-                print("Player hp: %s" % (self.player.stats["hp"]))
+                #print("Player hp: %s" % (self.player.stats["hp"]))
             else:
                 self.enemy.attack(self.player)
-                print("Player hp: %s" % (self.player.stats["hp"]))
+                #print("Player hp: %s" % (self.player.stats["hp"]))
 
                 if (self.battle_ended()):
                     return
 
                 player_commands[self.player_battle_command](self.enemy)
-                print("Enemy hp: %s" % (self.enemy.stats["hp"]))
+                #print("Enemy hp: %s" % (self.enemy.stats["hp"]))
 
             if (self.battle_ended()):
                 return
